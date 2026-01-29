@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Secure Search Terminal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: black;
+    color: #00ff99;
+    font-family: "Courier New", monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* Matrix background */
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  .terminal {
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid #00ff99;
+    padding: 30px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 0 20px #00ff99;
+    animation: flicker 2s infinite;
+  }
+
+  h1 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px #00ff99;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    background: black;
+    border: 1px solid #00ff99;
+    color: #00ff99;
+    font-size: 16px;
+    outline: none;
+  }
+
+  input::placeholder {
+    color: #00aa66;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: black;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: #00ff99;
+    color: black;
+  }
+
+  .status {
+    margin-top: 15px;
+    font-size: 12px;
+    opacity: 0.8;
+    height: 16px;
+  }
+
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="terminal">
+  <h1>> SECURE SEARCH TERMINAL</h1>
+
+  <form id="searchForm" action="https://duckduckgo.com/" method="GET">
+    <input type="text" name="q" placeholder="ENTER QUERY..." required>
+    <button type="submit">EXECUTE</button>
+  </form>
+
+  <div class="status" id="statusText">[ READY ]</div>
+</div>
+
+<script>
+  // Fake status messages
+  const status = document.getElementById("statusText");
+  const messages = [
+    "[ CONNECTING ]",
+    "[ BYPASSING TRACKERS ]",
+    "[ ENCRYPTING QUERY ]",
+    "[ READY ]"
+  ];
+
+  let i = 0;
+  setInterval(() => {
+    status.textContent = messages[i % messages.length];
+    i++;
+  }, 1200);
+
+  // Matrix rain effect
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const letters = "01";
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
+  const drops = Array.from({ length: columns }).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff99";
+    ctx.font = fontSize + "px monospace";
+
+    drops.forEach((y, index) => {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      const x = index * fontSize;
+      ctx.fillText(text, x, y * fontSize);
+
+      if (y * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[index] = 0;
+      }
+      drops[index]++;
+    });
+  }
+
+  setInterval(drawMatrix, 33);
+</script>
+
+</body>
+</html>
